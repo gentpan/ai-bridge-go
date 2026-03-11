@@ -23,8 +23,6 @@ type Server struct {
 	chatService  *service.ChatService
 	tokenService *service.TokenService
 	emailService *service.EmailService
-	metrics      *Metrics
-	rateLimiter  *rateLimiter
 	staticPath   string
 }
 
@@ -56,14 +54,11 @@ func NewServerWithStatic(cfg config.Config, staticPath string) nethttp.Handler {
 		chatService:  service.NewChatService(cfg),
 		tokenService: service.NewTokenService(tokenCfg),
 		emailService: emailSvc,
-		metrics:      NewMetrics(),
-		rateLimiter:  newRateLimiter(cfg.RateLimitPerMinute),
 		staticPath:   staticPath,
 	}
 
 	mux := nethttp.NewServeMux()
 	mux.HandleFunc("/healthz", server.handleHealth)
-	mux.HandleFunc("/metrics", server.handleMetrics)
 	mux.HandleFunc("/v1/connectors/proxy", server.handleConnectorProxy)
 	mux.HandleFunc("/v1/chat/completions", server.handleChat)
 	
@@ -259,37 +254,18 @@ func (s *Server) handleHealth(writer nethttp.ResponseWriter, request *nethttp.Re
 }
 
 func (s *Server) handleMetrics(writer nethttp.ResponseWriter, request *nethttp.Request) {
-	if s.config.MetricsToken != "" {
-		header := strings.TrimSpace(request.Header.Get("Authorization"))
-		expected := "Bearer " + s.config.MetricsToken
-		if header != expected {
-			writeError(writer, nethttp.StatusUnauthorized, "unauthorized", "invalid metrics token")
-			return
-		}
-	}
-
-	writeJSON(writer, nethttp.StatusOK, s.metrics.Snapshot())
+	writeJSON(writer, nethttp.StatusOK, map[string]any{"message": "metrics disabled in self-hosted mode"})
 }
 
 func (s *Server) handleChat(writer nethttp.ResponseWriter, request *nethttp.Request) {
 	if request.Method != nethttp.MethodPost {
-		s.metrics.RecordRequest(nethttp.StatusMethodNotAllowed, "POST required")
 		writeError(writer, nethttp.StatusMethodNotAllowed, "method_not_allowed", "POST required")
 		return
 	}
 
 	// 如果配置了 SiteTokens（托管模式），需要验证 Token；否则跳过
 	if len(s.config.SiteTokens) > 0 && !s.authorize(request) {
-		s.metrics.RecordAuthFailure()
-		s.metrics.RecordRequest(nethttp.StatusUnauthorized, "invalid site token")
 		writeError(writer, nethttp.StatusUnauthorized, "unauthorized", "invalid site token")
-		return
-	}
-
-	if !s.rateLimiter.Allow(request) {
-		s.metrics.RecordRateLimited()
-		s.metrics.RecordRequest(nethttp.StatusTooManyRequests, "rate limit exceeded")
-		writeError(writer, nethttp.StatusTooManyRequests, "rate_limited", "rate limit exceeded")
 		return
 	}
 
@@ -297,13 +273,11 @@ func (s *Server) handleChat(writer nethttp.ResponseWriter, request *nethttp.Requ
 
 	var chatRequest gateway.ChatRequest
 	if err := json.NewDecoder(request.Body).Decode(&chatRequest); err != nil {
-		s.metrics.RecordRequest(nethttp.StatusBadRequest, "request body must be valid JSON")
 		writeError(writer, nethttp.StatusBadRequest, "invalid_json", "request body must be valid JSON")
 		return
 	}
 
 	if len(chatRequest.Messages) == 0 {
-		s.metrics.RecordRequest(nethttp.StatusBadRequest, "messages is required")
 		writeError(writer, nethttp.StatusBadRequest, "missing_messages", "messages is required")
 		return
 	}
@@ -311,7 +285,6 @@ func (s *Server) handleChat(writer nethttp.ResponseWriter, request *nethttp.Requ
 	chatRequest.ProviderToken = strings.TrimSpace(request.Header.Get("X-AIBRIDGE-PROVIDER-TOKEN"))
 
 	if chatRequest.ProviderToken == "" {
-		s.metrics.RecordRequest(nethttp.StatusBadRequest, "provider token is required")
 		writeError(writer, nethttp.StatusBadRequest, "missing_provider_token", "provider token is required")
 		return
 	}
@@ -328,7 +301,6 @@ func (s *Server) handleChat(writer nethttp.ResponseWriter, request *nethttp.Requ
 		requestTrafficMode = "outbound"
 	}
 	if requestTrafficMode != s.config.NodeTrafficMode {
-		s.metrics.RecordRequest(nethttp.StatusBadRequest, "traffic mode mismatch")
 		writeError(writer, nethttp.StatusBadRequest, "traffic_mode_mismatch", "request traffic mode does not match this node")
 		log.Printf(
 			"chat_rejected node=%s node_mode=%s request_mode=%s provider=%s reason=traffic_mode_mismatch",
@@ -353,7 +325,6 @@ func (s *Server) handleChat(writer nethttp.ResponseWriter, request *nethttp.Requ
 			code = "unsupported_provider"
 		}
 
-		s.metrics.RecordRequest(status, err.Error())
 		// 记录失败的使用量
 		if requestToken != "" {
 			s.tokenService.RecordUsage(requestToken, chatRequest.Provider, chatRequest.Model, 0, latencyMs, "error")
@@ -372,7 +343,6 @@ func (s *Server) handleChat(writer nethttp.ResponseWriter, request *nethttp.Requ
 		return
 	}
 
-	s.metrics.RecordRequest(nethttp.StatusOK, "")
 	// 记录成功的使用量
 	if requestToken != "" {
 		s.tokenService.RecordUsage(requestToken, response.Provider, response.Model, response.Usage.TotalTokens, latencyMs, "success")
