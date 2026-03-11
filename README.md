@@ -42,7 +42,6 @@ AI Bridge 通过在海外部署一台轻量级代理网关来解决这一问题 
 
 - 支持 OpenAI、Claude、Google Gemini、DeepSeek 及任何 OpenAI 兼容 API
 - 无需鉴权，直接使用 AI 服务商 API Key
-- 内置速率限制、请求指标统计
 - Docker 一键部署
 
 ## 快速开始
@@ -79,7 +78,6 @@ curl http://localhost:8080/healthz
 | `DEFAULT_PROVIDER`        | `openai`                                           | 默认 AI 提供商                                             |
 | `DEFAULT_MODEL`           | `gpt-4.1-mini`                                     | 默认模型                                                   |
 | `REQUEST_TIMEOUT_SECONDS` | `60`                                               | 请求超时（秒）                                             |
-| `RATE_LIMIT_PER_MINUTE`   | `120`                                              | 每分钟请求限制                                             |
 | `NODE_NAME`               | `ai-bridge-node`                                   | 节点名称                                                   |
 | `NODE_TRAFFIC_MODE`       | `outbound`                                         | 流量方向：`outbound`（中国→海外）或 `inbound`（海外→中国） |
 | `OPENAI_BASE_URL`         | `https://api.openai.com/v1`                        | OpenAI API 地址                                            |
@@ -97,7 +95,6 @@ curl http://localhost:8080/healthz
 | 方法   | 路径                   | 说明       |
 | ------ | ---------------------- | ---------- |
 | `GET`  | `/healthz`             | 健康检查   |
-| `GET`  | `/metrics`             | 请求指标   |
 | `POST` | `/v1/chat/completions` | 聊天完成   |
 | `POST` | `/v1/connectors/proxy` | 代理连接器 |
 
