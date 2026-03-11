@@ -15,8 +15,8 @@ type Config struct {
 	DefaultProvider    string
 	DefaultModel       string
 	Providers          map[string]ProviderConfig
-	RateLimitPerMinute int
-	MetricsToken       string
+	RateLimitPerMinute int    // unused in self-hosted, kept for managed mode
+	MetricsToken       string // unused in self-hosted, kept for managed mode
 	NodeName           string
 	NodeTrafficMode    string
 	AllowedProxyHosts  map[string]struct{}
