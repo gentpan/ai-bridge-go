@@ -37,7 +37,7 @@ type ProviderConfig struct {
 
 func Load() (Config, error) {
 	cfg := Config{
-		ListenAddr:         envOrDefault("LISTEN_ADDR", ":8080"),
+		ListenAddr:         envOrDefault("LISTEN_ADDR", ":9260"),
 		RequestTimeout:     time.Duration(envIntOrDefault("REQUEST_TIMEOUT_SECONDS", 60)) * time.Second,
 		DefaultProvider:    strings.TrimSpace(envOrDefault("DEFAULT_PROVIDER", "openai")),
 		DefaultModel:       strings.TrimSpace(envOrDefault("DEFAULT_MODEL", "gpt-4.1-mini")),

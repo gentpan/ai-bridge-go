@@ -61,7 +61,7 @@ func NewServerWithStatic(cfg config.Config, staticPath string) nethttp.Handler {
 	mux.HandleFunc("/healthz", server.handleHealth)
 	mux.HandleFunc("/v1/connectors/proxy", server.handleConnectorProxy)
 	mux.HandleFunc("/v1/chat/completions", server.handleChat)
-	
+
 	// 如果配置了 SiteTokens（托管模式），启用 Token 管理 API
 	if len(cfg.SiteTokens) > 0 {
 		mux.HandleFunc("/api/apply-token", server.handleTokenApply)
@@ -70,7 +70,7 @@ func NewServerWithStatic(cfg config.Config, staticPath string) nethttp.Handler {
 		mux.HandleFunc("/api/tokens/revoke", server.handleTokenRevoke)
 		mux.HandleFunc("/api/", server.handleAPI404)
 	}
-	
+
 	// 静态文件服务
 	if staticPath != "" {
 		mux.Handle("/static/", nethttp.StripPrefix("/static/", nethttp.FileServer(nethttp.Dir(staticPath))))
@@ -101,11 +101,11 @@ func (s *Server) handleRoot(writer nethttp.ResponseWriter, request *nethttp.Requ
 	info += "  GET  /healthz              - Health check\n"
 	info += "  POST /v1/chat/completions  - Chat completions\n"
 	info += "  POST /v1/connectors/proxy  - Proxy connector\n"
-	
+
 	if len(s.config.SiteTokens) > 0 {
 		info += "  POST /api/apply-token      - Apply for token\n"
 	}
-	
+
 	writer.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	writer.WriteHeader(nethttp.StatusOK)
 	writer.Write([]byte(info))
@@ -242,7 +242,7 @@ func (s *Server) handleHealth(writer nethttp.ResponseWriter, request *nethttp.Re
 	if hasTokens {
 		mode = "Managed"
 	}
-	
+
 	writeJSON(writer, nethttp.StatusOK, map[string]any{
 		"ok":           true,
 		"time":         time.Now().UTC().Format(time.RFC3339),
@@ -478,17 +478,17 @@ func (s *Server) authorize(request *nethttp.Request) bool {
 	}
 
 	token := strings.TrimSpace(header[7:])
-	
+
 	// 1. 先检查静态配置的 SiteToken（管理员Token）
 	if _, ok := s.config.SiteTokens[token]; ok {
 		return true
 	}
-	
+
 	// 2. 再检查动态申请的Token
 	if valid, _ := s.tokenService.Validate(token); valid {
 		return true
 	}
-	
+
 	return false
 }
 

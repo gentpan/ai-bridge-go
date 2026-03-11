@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "${PORT:-8080}:8080"
+      - "${PORT:-9260}:9260"
 
     volumes:
       # 数据持久化（使用量统计等）
@@ -25,7 +25,7 @@ services:
 
     environment:
       # 基础配置
-      - LISTEN_ADDR=:8080
+      - LISTEN_ADDR=:9260
       - DATA_DIR=/app/data
       
       # 节点配置
@@ -50,7 +50,7 @@ services:
       # 只要没有 SITE_TOKEN，后端就会自动作为自托管运行
 
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9260/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3

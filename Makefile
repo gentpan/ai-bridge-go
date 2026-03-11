@@ -5,7 +5,7 @@ BINARY_NAME=ai-bridge
 DOCKER_IMAGE=ai-bridge:latest
 STATIC_DIR=./static
 DATA_DIR=./data
-PORT=8080
+PORT=9260
 
 # 构建二进制文件
 build:
@@ -32,7 +32,7 @@ docker-build:
 docker-run:
 	docker run -d \
 		--name ai-bridge \
-		-p $(PORT):8080 \
+		-p $(PORT):9260 \
 		-v $(PWD)/$(DATA_DIR):/app/data \
 		-e DATA_DIR=/app/data \
 		--env-file .env \
