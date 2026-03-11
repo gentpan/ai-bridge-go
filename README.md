@@ -31,7 +31,6 @@ AI Bridge 通过在海外部署一台轻量级代理网关来解决这一问题 
 docker run -d \
   --name ai-bridge \
   -p 8080:8080 \
-  -e OPENAI_BASE_URL=https://api.openai.com/v1 \
   ghcr.io/gentpan/ai-bridge-go:latest
 ```
 
