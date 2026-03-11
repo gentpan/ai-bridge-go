@@ -1,8 +1,16 @@
 # AI Bridge Go
 
-自托管 AI 代理网关 —— 部署在你自己的服务器上，安全代理 AI API 请求。
+自托管 AI API 反向代理网关，专为解决中国大陆及香港地区无法直接访问 OpenAI、Claude、Google Gemini 等海外 AI 服务而设计。
 
-API Key 只在你自己的服务器上流转，不经过任何第三方，避免泄露风险。
+## 项目背景
+
+由于网络环境和政策限制，中国大陆和香港的服务器无法稳定访问 OpenAI、Anthropic (Claude)、Google Gemini 等海外 AI 服务的 API。虽然本地开发时可以借助代理工具，但对于线上运行的 WordPress 站点或其他服务端应用，直接从国内/港区服务器调用这些 AI API 几乎不可行。
+
+AI Bridge 通过在海外部署一台轻量级代理网关来解决这一问题 —— 国内服务器将 AI 请求发送到你的海外网关，再由网关转发至 AI 服务商，实现稳定、安全的 AI API 访问。
+
+> **⚠️ 部署要求：** 本网关必须部署在能够正常访问海外 AI 服务 API 的服务器上，如美国、日本、新加坡等地区的 VPS。**请勿部署在中国大陆或香港服务器上**，否则仍然无法访问目标 API。
+
+**安全保障：** API Key 仅在你自己的服务器上流转，不经过任何第三方平台，杜绝密钥泄露风险。
 
 > **相关仓库**
 > - WordPress 插件：[gentpan/global-ai-bridge](https://github.com/gentpan/global-ai-bridge)
