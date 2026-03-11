@@ -70,26 +70,6 @@ curl http://localhost:9260/healthz
 6. **模型 API Token**：填入你的 OpenAI / Claude 等 API Key
 7. 保存后点击「测速当前节点」验证
 
-## 环境变量
-
-| 变量                      | 默认值                                             | 说明                                                       |
-| ------------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
-| `LISTEN_ADDR`             | `:9260`                                            | 监听地址                                                   |
-| `DEFAULT_PROVIDER`        | `openai`                                           | 默认 AI 提供商                                             |
-| `DEFAULT_MODEL`           | `gpt-4.1-mini`                                     | 默认模型                                                   |
-| `REQUEST_TIMEOUT_SECONDS` | `60`                                               | 请求超时（秒）                                             |
-| `NODE_NAME`               | `ai-bridge-node`                                   | 节点名称                                                   |
-| `NODE_TRAFFIC_MODE`       | `outbound`                                         | 流量方向：`outbound`（中国→海外）或 `inbound`（海外→中国） |
-| `OPENAI_BASE_URL`         | `https://api.openai.com/v1`                        | OpenAI API 地址                                            |
-| `ANTHROPIC_BASE_URL`      | `https://api.anthropic.com/v1`                     | Claude API 地址                                            |
-| `GOOGLE_BASE_URL`         | `https://generativelanguage.googleapis.com/v1beta` | Google Gemini API 地址                                     |
-| `DEEPSEEK_BASE_URL`       | `https://api.deepseek.com/v1`                      | DeepSeek API 地址                                          |
-| `QWEN_BASE_URL`           | —                                                  | 通义千问（配置后启用）                                     |
-| `DOUBAO_BASE_URL`         | —                                                  | 豆包（配置后启用）                                         |
-| `KIMI_BASE_URL`           | —                                                  | Kimi（配置后启用）                                         |
-
-每个提供商还支持 `_ENABLED`（`true`/`false`）、`_DEFAULT_MODEL`、`_API_VERSION` 后缀变量。
-
 ## 更多信息
 
 - [PHP 后端](https://github.com/gentpan/ai-bridge-php)
