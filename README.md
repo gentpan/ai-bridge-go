@@ -25,28 +25,11 @@ AI Bridge 通过在海外部署一台轻量级代理网关来解决这一问题 
 
 ## 快速开始
 
-### Docker 一键部署（推荐）
-
 ```bash
 docker run -d \
   --name ai-bridge \
   -p 8080:8080 \
   ghcr.io/gentpan/ai-bridge-go:latest
-```
-
-### Docker Compose
-
-```bash
-curl -O https://raw.githubusercontent.com/gentpan/ai-bridge-go/main/docker-compose.selfhosted.yml
-docker compose -f docker-compose.selfhosted.yml up -d
-```
-
-### 二进制部署
-
-```bash
-wget https://github.com/gentpan/ai-bridge-go/releases/latest/download/ai-bridge-linux-amd64
-chmod +x ai-bridge-linux-amd64
-./ai-bridge-linux-amd64
 ```
 
 ### 验证
