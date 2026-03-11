@@ -49,14 +49,14 @@ AI Bridge 通过在海外部署一台轻量级代理网关来解决这一问题 
 ```bash
 docker run -d \
   --name ai-bridge \
-  -p 8080:8080 \
+  -p 9260:9260 \
   ghcr.io/gentpan/ai-bridge-go:latest
 ```
 
 ### 验证
 
 ```bash
-curl http://localhost:8080/healthz
+curl http://localhost:9260/healthz
 # {"ok":true, "mode":"Self-Hosted", ...}
 ```
 
@@ -74,7 +74,7 @@ curl http://localhost:8080/healthz
 
 | 变量                      | 默认值                                             | 说明                                                       |
 | ------------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
-| `LISTEN_ADDR`             | `:8080`                                            | 监听地址                                                   |
+| `LISTEN_ADDR`             | `:9260`                                            | 监听地址                                                   |
 | `DEFAULT_PROVIDER`        | `openai`                                           | 默认 AI 提供商                                             |
 | `DEFAULT_MODEL`           | `gpt-4.1-mini`                                     | 默认模型                                                   |
 | `REQUEST_TIMEOUT_SECONDS` | `60`                                               | 请求超时（秒）                                             |
@@ -89,35 +89,6 @@ curl http://localhost:8080/healthz
 | `KIMI_BASE_URL`           | —                                                  | Kimi（配置后启用）                                         |
 
 每个提供商还支持 `_ENABLED`（`true`/`false`）、`_DEFAULT_MODEL`、`_API_VERSION` 后缀变量。
-
-## API 端点
-
-| 方法   | 路径                   | 说明       |
-| ------ | ---------------------- | ---------- |
-| `GET`  | `/healthz`             | 健康检查   |
-| `POST` | `/v1/chat/completions` | 聊天完成   |
-| `POST` | `/v1/connectors/proxy` | 代理连接器 |
-
-## 请求示例
-
-```bash
-curl -X POST http://localhost:8080/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "X-AIBRIDGE-PROVIDER-TOKEN: sk-your-openai-key" \
-  -d '{
-    "provider": "openai",
-    "model": "gpt-4.1-mini",
-    "messages": [{"role": "user", "content": "Hello"}]
-  }'
-```
-
-## 构建
-
-```bash
-make build          # 编译二进制
-make docker-build   # 构建 Docker 镜像
-make docker-push    # 推送到 GHCR
-```
 
 ## 更多信息
 

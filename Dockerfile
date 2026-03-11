@@ -43,11 +43,11 @@ RUN mkdir -p /app/data && chown -R aibridge:aibridge /app
 USER aibridge
 
 # 暴露端口
-EXPOSE 8080
+EXPOSE 9260
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -q --spider http://localhost:8080/healthz || exit 1
+    CMD wget -q --spider http://localhost:9260/healthz || exit 1
 
 # 启动命令
 ENTRYPOINT ["/app/ai-bridge"]
